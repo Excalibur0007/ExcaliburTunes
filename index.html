@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excalibur Tunes - YouTube Music Player</title>
+    <style>
+        /* Animation for hue shifting */
+        @keyframes hue-shift {
+            0% { background-color: #ff007f; }
+            25% { background-color: #ff7f00; }
+            50% { background-color: #7fff00; }
+            75% { background-color: #00ff7f; }
+            100% { background-color: #007fff; }
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(90deg, #121212, #1e1e1e);
+            animation: hue-shift 10s linear infinite; /* Hue shifting background */
+            color: #e0e0e0; /* Light text for contrast */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: #f77737; /* Neon color for header */
+            margin: 10px 0;
+            font-size: 3rem;
+            letter-spacing: 1px;
+            text-shadow: 0 0 1px rgba(247, 119, 55, 0.8), 0 0 15px rgba(247, 119, 55, 0.5); /* Glowing effect */
+            transition: transform 0.3s ease, text-shadow 0.3s ease; /* Smooth hover effects */
+        }
+
+        h1:hover {
+            transform: scale(1.1); /* Slight zoom on hover */
+            text-shadow: 0 0 2px rgba(247, 119, 55, 1), 0 0 30px rgba(247, 119, 55, 0.7);
+        }
+
+        input {
+            padding: 12px;
+            width: 100%;
+            max-width: 350px;
+            font-size: 16px;
+            border: none;
+            border-radius: 30px; /* Rounded inputs */
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            margin-bottom: 10px;
+            box-shadow: 0 0 10px rgba(247, 119, 55, 0.3); /* Soft glowing effect */
+            transition: box-shadow 0.3s ease, transform 0.3s ease; /* Smooth transitions */
+        }
+
+        input:focus {
+            box-shadow: 0 0 20px rgba(247, 119, 55, 0.5); /* Glow on focus */
+            transform: scale(1.05);
+            outline: none;
+        }
+
+        button {
+            padding: 12px 24px;
+            background-color: #f77737; /* Neon button color */
+            color: white;
+            border: none;
+            border-radius: 30px; /* Rounded buttons */
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            width: 100%;
+            max-width: 350px;
+            box-shadow: 0 0 10px rgba(247, 119, 55, 0.3); /* Button glow */
+        }
+
+        button:hover {
+            background-color: #fa8e1c; /* Slight color change on hover */
+            transform: translateY(-2px); /* Lift effect */
+            box-shadow: 0 0 20px rgba(247, 119, 55, 0.5); /* Stronger glow on hover */
+        }
+
+        .song-list {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
+            overflow-y: auto;
+            max-height: 300px;
+            border-radius: 15px;
+            background: rgba(18, 18, 18, 0.9); /* Slightly transparent dark background */
+            padding: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.7); /* Soft shadow */
+        }
+
+        .song-item {
+            background-color: #1e1e1e;
+            padding: 15px;
+            margin: 5px 0;
+            cursor: pointer;
+            border: 1px solid #f77737; /* Border matching neon color */
+            border-radius: 12px;
+            transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 0 10px rgba(247, 119, 55, 0.2); /* Soft shadow */
+        }
+
+        .song-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            margin-right: 10px;
+            transition: transform 0.3s ease; /* Smooth image hover */
+        }
+
+        .song-item:hover {
+            background-color: rgba(255, 193, 7, 0.2); /* Soft yellow hover effect */
+            transform: translateY(-2px); /* Slight lift */
+            box-shadow: 0 0 20px rgba(255, 193, 7, 0.5); /* Stronger shadow on hover */
+        }
+
+        .song-item:hover img {
+            transform: scale(1.1); /* Slight zoom */
+        }
+
+        #lyrics {
+            margin-top: 20px;
+            font-style: italic;
+            color: #bbb;
+            text-align: center;
+            max-width: 600px;
+            border-radius: 15px;
+            padding: 15px;
+            background: rgba(18, 18, 18, 0.9);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.7); /* Soft shadow */
+        }
+
+        .audio-container {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
+            background-color: #1e1e1e;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(247, 119, 55, 0.4); /* Glowing shadow */
+            border: 1px solid #f77737; /* Neon color border */
+            position: relative;
+        }
+
+        audio {
+            width: 100%;
+            outline: none;
+            background: transparent;
+        }
+
+        .audio-container::before {
+            content: '🎧';
+            font-size: 2rem;
+            color: #f77737;
+            position: absolute;
+            top: -30px;
+            left: 20px;
+            animation: pulseGlow 1.5s infinite alternate; /* Glowing icon effect */
+        }
+
+        @keyframes pulseGlow {
+            0% {
+                text-shadow: 0 0 5px #f77737, 0 0 15px #f77737, 0 0 20px #f77737;
+            }
+            100% {
+                text-shadow: 0 0 10px #f77737, 0 0 30px #f77737, 0 0 40px #f77737;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px; /* Width of the scrollbar */
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(30, 30, 30, 0.8); /* Track color */
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #f77737, #fa8e1c); /* Neon gradient thumb */
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(247, 119, 55, 0.5); /* Glow effect on scrollbar thumb */
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #fa8e1c, #f77737); /* Bright hover effect */
+        }
+    </style>
+</head>
+<body>
+
+<h1>Excalibur Tunes</h1>
+<input type="text" id="search-query" placeholder="Search for a song..." />
+<button onclick="searchSongs()">Search</button>
+
+<div class="song-list" id="song-list"></div>
+
+<div id="lyrics"></div>
+
+<div class="audio-container">
+    <audio id="audio-player" controls>
+        Your browser does not support the audio element.
+    </audio>
+</div>
+
+<script>
+    async function searchSongs() {
+        const query = document.getElementById('search-query').value;
+        const response = await fetch(`/search?query=${query}`);
+        const data = await response.json();
+        const songList = document.getElementById('song-list');
+        songList.innerHTML = ''; // Clear previous results
+
+        data.songs.forEach(song => {
+            const songItem = document.createElement('div');
+            songItem.className = 'song-item';
+            songItem.innerHTML = `
+                <img src="${song.thumbnail}" alt="${song.title}">
+                <div>
+                    <strong>${song.title}</strong><br>
+                    <small>${song.description}</small>
+                </div>
+            `;
+            songItem.onclick = () => playSong(song.videoId);
+            songList.appendChild(songItem);
+        });
+    }
+
+    async function playSong(videoId) {
+        try {
+            const response = await fetch(`/play?videoId=${videoId}`);
+            const data = await response.json();
+
+            if (data.stream_url) {
+                const audioPlayer = document.getElementById('audio-player');
+                audioPlayer.src = data.stream_url;
+                audioPlayer.play();
+            }
+
+            const lyricsDiv = document.getElementById('lyrics');
+            lyricsDiv.textContent = data.lyrics || "No lyrics available";
+        } catch (error) {
+            console.error('Error playing song:', error);
+        }
+    }
+</script>
+
+</body>
+</html>
